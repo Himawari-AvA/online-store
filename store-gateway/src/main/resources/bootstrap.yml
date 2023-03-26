@@ -1,0 +1,10 @@
+server:
+  port: 3000
+  servlet:
+    context-path: /
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    nacos:
+      server-addr: 43.143.48.248:8848
