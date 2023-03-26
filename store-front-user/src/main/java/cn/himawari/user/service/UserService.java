@@ -34,4 +34,25 @@ public interface UserService {
      * @return
      */
     R listPage(PageParam pageParam);
+
+    /**
+     * 删除用户
+     * @param userId
+     * @return
+     */
+    R remove(Integer userId);
+
+    /**
+     * 修改用户信息
+     * @param user
+     * @return
+     */
+    R update(User user);
+
+    /**
+     * 添加用户
+     * @param user
+     * @return
+     */
+    R save(User user);
 }

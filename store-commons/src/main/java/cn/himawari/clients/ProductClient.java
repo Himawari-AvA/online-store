@@ -1,6 +1,7 @@
 package cn.himawari.clients;
 
 import cn.himawari.param.ProductCollectParam;
+import cn.himawari.param.ProductHistoryParam;
 import cn.himawari.param.ProductIdParam;
 import cn.himawari.pojo.Product;
 import cn.himawari.utils.R;
@@ -23,4 +24,11 @@ public interface ProductClient {
 
     @PostMapping("/product/cart/list")
     List<Product> cartList(@RequestBody ProductCollectParam productCollectParam);
+
+    @PostMapping("/product/history/list")
+    R productIds(@RequestBody ProductHistoryParam productHistoryParam);
+
+    @PostMapping("/product/admin/count")
+    Long adminCount(@RequestBody Integer categoryId);
+
 }

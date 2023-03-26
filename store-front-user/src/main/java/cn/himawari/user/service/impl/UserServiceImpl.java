@@ -123,4 +123,73 @@ public class UserServiceImpl implements UserService {
         long total = page.getTotal();
         return R.ok("用户管理查询成功",records,total);
     }
+
+    /**
+     * 删除用户
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public R remove(Integer userId) {
+        int i = userMapper.deleteById(userId);
+
+        log.info("UserServiceImpl.remove业务结束，结果：{}",i);
+        return R.ok("用户数据删除成功");
+    }
+
+    /**
+     * 修改用户信息
+     *与旧密码相同 不改
+     * 与旧密码不同 加密后更新
+     * 修改信息
+     * @param user
+     * @return
+     */
+    @Override
+    public R update(User user) {
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",user.getUserId());
+        queryWrapper.eq("password",user.getPassword());
+        Long aLong = userMapper.selectCount(queryWrapper);
+        if (aLong == 0) {
+            user.setPassword(MD5Util.encode(user.getPassword()+UserConstants.USER_SALT));
+        }
+        int i = userMapper.updateById(user);
+        log.info("UserServiceImpl.update业务结束，结果：{}",i);
+        return R.ok("用户信息修改成功");
+    }
+
+    /**
+     * 添加用户
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public R save(User user) {
+        //        1.
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_name",user.getUserName());
+        //数据库查询
+        Long total = userMapper.selectCount(queryWrapper);
+        if (total > 0) {
+            log.info("UserServiceImpl.register业务结束，结果：{}","账号存在，注册失败！");
+            return R.fail("账号已经存在，不可添加");
+        }
+
+//        2.MD5加密
+        String finalPwd = MD5Util.encode(user.getPassword()+ UserConstants.USER_SALT);
+        user.setPassword(finalPwd);
+//        3.
+        int rows = userMapper.insert(user);
+//        4.
+        if(rows == 0){
+            log.info("UserServiceImpl.save业务结束，结果：{}","数据添加失败！");
+            return R.fail("添加失败，请重试");
+        }
+        log.info("UserServiceImpl.save业务结束，结果：{}","添加成功！");
+        return R.ok("添加成功！");
+    }
 }

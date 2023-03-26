@@ -215,4 +215,37 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
         log.info("ProductServiceImpl.subNumber业务结束，结果：库存和销售量数据更新完毕");
     }
 
+    /**
+     * 根据商品id集合查询商品信息
+     *
+     * @param productIds
+     * @return
+     */
+    @Cacheable(value = "list.product", key = "#productIds")
+    @Override
+    public R ids(List<Integer> productIds) {
+
+        QueryWrapper<Product> queryWrapper= new  QueryWrapper<>();
+        queryWrapper.in("product_id",productIds);
+        List<Product> productList = productMapper.selectList(queryWrapper);
+        R ok = R.ok("类别信息查询成功！", productList);
+        log.info("ProductServiceImpl.ids业务结束，结果：{}",ok);
+        return ok;
+    }
+
+    /**
+     * 该类别对应的商品数量查询
+     *
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public Long adminCount(Integer categoryId) {
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("category_id",categoryId);
+        Long count = baseMapper.selectCount(queryWrapper);
+        log.info("ProductServiceImpl.adminCount业务结束，结果：{}",count);
+        return count;
+    }
+
 }

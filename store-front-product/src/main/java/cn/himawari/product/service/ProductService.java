@@ -63,4 +63,18 @@ public interface ProductService extends IService<Product> {
      * @return
      */
     void subNumber(List<OrderToProduct> orderToProducts);
+
+    /**
+     * 根据商品id集合查询商品信息
+     * @param productIds
+     * @return
+     */
+    R ids(List<Integer> productIds);
+
+    /**
+     * 该类别对应的商品数量查询
+     * @param categoryId
+     * @return
+     */
+    Long adminCount(Integer categoryId);
 }

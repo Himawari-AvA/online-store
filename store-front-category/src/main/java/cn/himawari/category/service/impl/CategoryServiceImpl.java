@@ -2,9 +2,13 @@ package cn.himawari.category.service.impl;
 
 import cn.himawari.category.mapper.CategoryMapper;
 import cn.himawari.category.service.CategoryService;
+import cn.himawari.clients.ProductClient;
+import cn.himawari.param.PageParam;
 import cn.himawari.pojo.Category;
 import cn.himawari.utils.R;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,9 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private ProductClient productClient;
 
     @Override
     public R byName(String categoryName) {
@@ -45,5 +52,76 @@ public class CategoryServiceImpl implements CategoryService {
         R ok = R.ok("类别全部数据查询成功!", categoryList);
         log.info("CategoryServiceImpl.list业务结束，结果:{}",ok);
         return ok;
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param pageParam
+     * @return
+     */
+    @Override
+    public R listPage(PageParam pageParam) {
+        IPage<Category> page  = new Page<>(pageParam.getCurrentPage(), pageParam.getPageSize());
+        page = categoryMapper.selectPage(page,null);
+        return R.ok("分类分页数据查询成功",page.getRecords(),page.getTotal());
+
+    }
+
+    /**
+     * 添加类别信息
+     *
+     * @param category
+     * @return
+     */
+    @Override
+    public R adminSave(Category category) {
+        QueryWrapper<Category> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("category_name",category.getCategoryName());
+        Long count = categoryMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            return R.fail("类别已经存在，添加失败！");
+        }
+        int insert = categoryMapper.insert(category);
+        log.info("CategoryServiceImpl.list业务结束，结果:{}",insert);
+        return  R.ok("类别添加成功");
+    }
+
+    /**
+     * 删除类别
+     *
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public R adminRemove(Integer categoryId) {
+
+        Long aLong = productClient.adminCount(categoryId);
+        if (aLong >0) {
+            return R.fail("类别删除失败","有"+aLong+"件商品正在引用");
+        }
+        int i = categoryMapper.deleteById(categoryId);
+        log.info("CategoryServiceImpl.adminRemove业务结束，结果:{}",i);
+        return R.ok("类别删除成功");
+
+    }
+
+    /**
+     * 修改类别名称
+     *
+     * @param category
+     * @return
+     */
+    @Override
+    public R adminUpdate(Category category) {
+        QueryWrapper<Category> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("category_name",category.getCategoryName());
+        Long count = categoryMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            return R.fail("类别已经存在，修改失败！");
+        }
+        int i = categoryMapper.updateById(category);
+        log.info("CategoryServiceImpl.list业务结束，结果:{}",i);
+        return  R.ok("类别修改成功");
     }
 }

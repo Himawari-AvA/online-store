@@ -1,5 +1,6 @@
 package cn.himawari.admin.config;
 
+import cn.himawari.config.CacheConfiguration;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
@@ -9,8 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-//public class AdminConfiguration extends CacheConfiguration{
-public class AdminConfiguration {
+public class AdminConfiguration extends CacheConfiguration {
+//public class AdminConfiguration {
     /**
      * mq序列化方式，选择json！
      * @return
