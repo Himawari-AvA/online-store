@@ -1,6 +1,7 @@
 package cn.himawari.product.service;
 
 import cn.himawari.param.ProductIdsParam;
+import cn.himawari.param.ProductSaveParam;
 import cn.himawari.param.ProductSearchParam;
 import cn.himawari.pojo.Product;
 import cn.himawari.to.OrderToProduct;
@@ -77,4 +78,25 @@ public interface ProductService extends IService<Product> {
      * @return
      */
     Long adminCount(Integer categoryId);
+
+    /**
+     * 商品添加
+     * @param productSaveParam
+     * @return
+     */
+    R adminSave(ProductSaveParam productSaveParam);
+
+    /**
+     * 商品信息更新
+     * @param product
+     * @return
+     */
+    R adminUpdate(Product product);
+
+    /**
+     * 商品删除
+     * @param productId
+     * @return
+     */
+    R adminRemove(Integer productId);
 }

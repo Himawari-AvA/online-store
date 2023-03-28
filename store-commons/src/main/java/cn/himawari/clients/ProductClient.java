@@ -3,6 +3,7 @@ package cn.himawari.clients;
 import cn.himawari.param.ProductCollectParam;
 import cn.himawari.param.ProductHistoryParam;
 import cn.himawari.param.ProductIdParam;
+import cn.himawari.param.ProductSaveParam;
 import cn.himawari.pojo.Product;
 import cn.himawari.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -31,4 +32,12 @@ public interface ProductClient {
     @PostMapping("/product/admin/count")
     Long adminCount(@RequestBody Integer categoryId);
 
+    @PostMapping("/product/admin/save")
+    R adminSave(@RequestBody ProductSaveParam productSaveParam);
+
+    @PostMapping("/product/admin/update")
+    R adminUpdate(@RequestBody Product product);
+
+    @PostMapping("/product/admin/remove")
+    R adminRemove(@RequestBody Integer productId);
 }

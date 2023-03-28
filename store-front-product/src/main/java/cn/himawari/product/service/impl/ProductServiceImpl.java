@@ -1,8 +1,8 @@
 package cn.himawari.product.service.impl;
 
-import cn.himawari.clients.CategoryClient;
-import cn.himawari.clients.SearchClient;
+import cn.himawari.clients.*;
 import cn.himawari.param.ProductIdsParam;
+import cn.himawari.param.ProductSaveParam;
 import cn.himawari.param.ProductSearchParam;
 import cn.himawari.pojo.Category;
 import cn.himawari.pojo.Picture;
@@ -17,14 +17,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +38,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
 
     @Autowired
     private SearchClient searchClient;
+    @Autowired
+    private CartClient cartClient;
+    @Autowired
+    private OrderClient orderClient;
+    @Autowired
+    private HistoryClient historyClient;
     @Autowired
     private ProductMapper productMapper;
     @Autowired
@@ -246,6 +253,93 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
         Long count = baseMapper.selectCount(queryWrapper);
         log.info("ProductServiceImpl.adminCount业务结束，结果：{}",count);
         return count;
+    }
+
+    /**
+     * 商品增加
+     *商品数据
+     * 商品图片分割+保存
+     * 数据库的添加、
+     * 清空缓存
+     * @param productSaveParam
+     * @return
+     */
+    @CacheEvict(value = "list.product",allEntries = true)
+    @Override
+    public R adminSave(ProductSaveParam productSaveParam) {
+
+        Product product = new Product();
+        BeanUtils.copyProperties(productSaveParam,product);
+        int rows = productMapper.insert(product);
+        log.info("ProductServiceImpl.adminSave业务结束，结果：{}",rows);
+        String pictures = productSaveParam.getPictures();
+        if(!StringUtils.isEmpty(pictures)){
+            //特殊字符串
+            String[] urls = pictures.split("\\+");
+//            List<Picture> pictureList = new ArrayList<>();
+            for (String url : urls) {
+                Picture picture = new Picture();
+                picture.setProductId(product.getProductId());
+                picture.setProductPicture(url);
+                pictureMapper.insert(picture);
+            }
+        }
+
+        searchClient.saveOrUpdate(product);
+
+        return R.ok("商品数据添加成功！");
+    }
+
+    /**
+     * 商品信息更新
+     *
+     * @param product
+     * @return
+     */
+    @Override
+    public R adminUpdate(Product product) {
+        productMapper.updateById(product);
+        searchClient.saveOrUpdate(product);
+        return R.ok("商品数据更新成功");
+    }
+
+    /**
+     * 商品删除
+     *
+     * @param productId
+     * @return
+     */
+
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "list.product",allEntries = true),
+                    @CacheEvict(value = "product",key = "#productId")
+            }
+    )
+    @Override
+    public R adminRemove(Integer productId) {
+        R r = cartClient.check(productId);
+        if("004".equals(r.getCode())){
+            log.info("ProductServiceImpl.adminRemove业务结束，结果：{}",r.getMsg());
+            return r;
+        }
+
+       r = orderClient.check(productId);
+        if("004".equals(r.getCode())){
+            log.info("ProductServiceImpl.adminRemove业务结束，结果：{}",r.getMsg());
+            return r;
+        }
+
+        productMapper.deleteById(productId);
+
+        QueryWrapper<Picture> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_id",productId);
+        pictureMapper.delete(queryWrapper);
+
+        historyClient.remove(productId);
+
+        searchClient.remove(productId);
+        return R.ok("商品删除成功！");
     }
 
 }

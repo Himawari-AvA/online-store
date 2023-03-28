@@ -4,7 +4,9 @@ package cn.himawari.order.controller;
 import cn.himawari.order.service.OrderService;
 import cn.himawari.param.CartListParam;
 import cn.himawari.param.OrderParam;
+import cn.himawari.param.PageParam;
 import cn.himawari.utils.R;
+import feign.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +32,16 @@ public class OrderController {
         if(result.hasErrors()){
             return R.fail("参数异常，查询失败");
         }
-
         return orderService.list(cartListParam.getUserId());
+    }
+
+    @PostMapping("remove/check")
+    public R check(@RequestBody Integer productId){
+        return orderService.check(productId);
+    }
+
+    @PostMapping("admin/list")
+    public R adminList(@RequestBody PageParam pageParam){
+        return orderService.adminList(pageParam);
     }
 }

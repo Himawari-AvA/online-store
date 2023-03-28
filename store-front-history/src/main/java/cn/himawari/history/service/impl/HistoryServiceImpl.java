@@ -5,6 +5,7 @@ import cn.himawari.history.mapper.HistoryMapper;
 import cn.himawari.history.service.HistoryService;
 import cn.himawari.param.ProductHistoryParam;
 import cn.himawari.pojo.History;
+import cn.himawari.pojo.Order;
 import cn.himawari.utils.R;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -90,6 +91,22 @@ public class HistoryServiceImpl implements HistoryService {
         int rows = historyMapper.delete(queryWrapper);
         log.info("HistoryServiceImpl.remove方法结束，结果：{}",rows);
         return R.ok("历史记录删除成功！");
+    }
+
+    /**
+     * 根据id删除历史记录商品
+     *
+     * @param productId
+     * @return
+     */
+    @Override
+    public R removeByProductId(Integer productId) {
+        QueryWrapper<History> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_id",productId);
+        int rows = historyMapper.delete(queryWrapper);
+        log.info("HistoryServiceImpl.removeByProductId，结果：{}",rows);
+        return R.ok("历史记录商品删除成功");
+
     }
 
 

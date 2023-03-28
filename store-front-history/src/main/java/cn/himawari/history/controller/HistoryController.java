@@ -30,4 +30,9 @@ public class HistoryController {
         return historyService.remove(history);
     }
 
+    @PostMapping("remove/product")
+    public R removeByProductId(@RequestBody Integer productId){
+        return historyService.removeByProductId(productId);
+    }
+
 }

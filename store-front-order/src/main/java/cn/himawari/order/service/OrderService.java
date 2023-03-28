@@ -1,6 +1,7 @@
 package cn.himawari.order.service;
 
 import cn.himawari.param.OrderParam;
+import cn.himawari.param.PageParam;
 import cn.himawari.pojo.Order;
 import cn.himawari.utils.R;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,4 +22,18 @@ public interface OrderService extends IService<Order> {
      * @return
      */
     R list(Integer userId);
+
+    /**
+     * 检查订单中是否有商品引用
+     * @param productId
+     * @return
+     */
+    R check(Integer productId);
+
+    /**
+     * 后台管理查询订单数据
+     * @param pageParam
+     * @return
+     */
+    R adminList(PageParam pageParam);
 }

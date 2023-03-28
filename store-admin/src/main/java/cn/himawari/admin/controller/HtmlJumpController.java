@@ -1,6 +1,8 @@
 package cn.himawari.admin.controller;
 import cn.himawari.clients.CategoryClient;
 import cn.himawari.pojo.Category;
+import cn.himawari.utils.R;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -21,8 +25,8 @@ import java.util.List;
 @RequestMapping
 public class HtmlJumpController {
 
-//    @Autowired
-//    private CategoryClient categoryClient;
+    @Autowired
+    private CategoryClient categoryClient;
 
     /**
      *  设计欢迎页面跳转controller
@@ -129,9 +133,20 @@ public class HtmlJumpController {
     public String productSaveHtml(Model model){
         log.info("HtmlJumpController.productSaveHtml业务结束，结果:{}");
 
-        //查询类别列表,存入共享域
-        //List<Category> list = categoryClient.list();
-//        model.addAttribute("clist",list);
+//        查询类别列表,存入共享域
+        R r = categoryClient.list();
+        //linedhashMap
+        List<LinkedHashMap> data = (List<LinkedHashMap>) r.getData();
+
+        List<Category> categoryList = new ArrayList<>();
+        for (LinkedHashMap map : data) {
+            Category category = new Category();
+            category.setCategoryId((Integer) map.get("category_id"));
+            category.setCategoryName((String) map.get("category_name"));
+            categoryList.add(category);
+        }
+
+        model.addAttribute("clist",categoryList);
         return "product/add";
     }
 
@@ -143,9 +158,21 @@ public class HtmlJumpController {
     public String productUpdateHtml(Model model){
         log.info("HtmlJumpController.productUpdateHtml业务结束，结果:{}");
 
-        //查询类别列表,存入共享域
-        //List<Category> list = categoryClient.list();
-//        model.addAttribute("clist",list);
+//        查询类别列表,存入共享域
+        R r = categoryClient.list();
+        //linedhashMap
+        List<LinkedHashMap> data = (List<LinkedHashMap>) r.getData();
+
+        List<Category> categoryList = new ArrayList<>();
+        for (LinkedHashMap map : data) {
+            Category category = new Category();
+            category.setCategoryId((Integer) map.get("category_id"));
+            category.setCategoryName((String) map.get("category_name"));
+            categoryList.add(category);
+        }
+
+
+        model.addAttribute("clist",categoryList);
         return "product/edit";
     }
 }

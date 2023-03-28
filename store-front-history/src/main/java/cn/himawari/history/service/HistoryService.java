@@ -25,4 +25,11 @@ public interface HistoryService {
      * @return
      */
     R remove(History history);
+
+    /**
+     * 根据id删除历史记录商品
+     * @param productId
+     * @return
+     */
+    R removeByProductId(Integer productId);
 }

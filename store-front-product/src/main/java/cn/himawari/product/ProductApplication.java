@@ -1,7 +1,6 @@
 package cn.himawari.product;
 
-import cn.himawari.clients.CategoryClient;
-import cn.himawari.clients.SearchClient;
+import cn.himawari.clients.*;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
@@ -15,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 
 @MapperScan(basePackages = "cn.himawari.product.mapper")
 @SpringBootApplication
-@EnableFeignClients(clients = {CategoryClient.class, SearchClient.class})
+@EnableFeignClients(clients = {CategoryClient.class, SearchClient.class, OrderClient.class, CartClient.class, HistoryClient.class})
 @EnableCaching
 public class ProductApplication {
     public static void main(String[] args) {

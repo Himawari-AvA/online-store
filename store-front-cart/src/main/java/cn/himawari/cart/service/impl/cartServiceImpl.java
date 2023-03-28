@@ -192,5 +192,25 @@ public class cartServiceImpl implements CartService {
         log.info("CartServiceImpl.clearIds业务结束，结果:{}",cartIds);
     }
 
+    /**
+     * 查询购物车项
+     *
+     * @param productId
+     * @return
+     */
+    @Override
+    public R check(Integer productId) {
+
+        QueryWrapper<Cart> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_id",productId);
+        Long count = cartMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            return R.fail("有"+count+"件购物车商品正在引用，删除失败！");
+
+        }
+        return R.ok("购物车无商品引用");
+
+    }
+
 
 }

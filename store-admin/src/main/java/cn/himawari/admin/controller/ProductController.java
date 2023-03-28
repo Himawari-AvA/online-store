@@ -2,7 +2,9 @@ package cn.himawari.admin.controller;
 
 import cn.himawari.admin.service.ProductService;
 import cn.himawari.admin.utils.AliyunOSSUtils;
+import cn.himawari.param.ProductSaveParam;
 import cn.himawari.param.ProductSearchParam;
+import cn.himawari.pojo.Product;
 import cn.himawari.utils.R;
 import net.sf.jsqlparser.schema.MultiPartName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +37,20 @@ public class ProductController {
         String url = aliyunOSSUtils.uploadImage(filename, bytes, contentType, hours);
         System.out.println("url = " + url);
         return R.ok("图片上传成功！",url);
+    }
+
+    @PostMapping("save")
+    public R adminSave(ProductSaveParam productSaveParam){
+        return productService.save(productSaveParam);
+    }
+
+    @PostMapping("update")
+    public R adminUpdate(Product product){
+        return productService.update(product);
+    }
+
+    @PostMapping("remove")
+    public R adminRemove(Integer productId){
+        return productService.remove(productId);
     }
 }

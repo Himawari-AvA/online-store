@@ -1,14 +1,17 @@
 package cn.himawari.order.service.impl;
 
 import cn.himawari.clients.ProductClient;
-import cn.himawari.order.mapper.OrderMappler;
+import cn.himawari.order.mapper.OrderMapper;
 import cn.himawari.order.service.OrderService;
 import cn.himawari.param.OrderParam;
+import cn.himawari.param.PageParam;
 import cn.himawari.param.ProductCollectParam;
+import cn.himawari.pojo.Cart;
 import cn.himawari.pojo.Order;
 import cn.himawari.pojo.Product;
 import cn.himawari.to.OrderToProduct;
 import cn.himawari.utils.R;
+import cn.himawari.vo.AdminOrderVo;
 import cn.himawari.vo.CartVo;
 import cn.himawari.vo.OrderVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -26,9 +29,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 @Service
 @Slf4j
-public class OrderServiceImpl extends ServiceImpl<OrderMappler, Order> implements OrderService {
+public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
     @Autowired
     private ProductClient productClient;
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -139,5 +145,39 @@ public class OrderServiceImpl extends ServiceImpl<OrderMappler, Order> implement
         R ok = R.ok("订单数据获取成功",result);
         log.info("OrderServiceImpl.list业务结束，结果:{}",ok);
         return ok;
+    }
+
+    /**
+     * 检查订单中是否有商品引用
+     *
+     * @param productId
+     * @return
+     */
+    @Override
+    public R check(Integer productId) {
+
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_id",productId);
+        Long count = baseMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            return R.fail("有"+count+"件订单商品正在引用，删除失败！");
+
+        }
+        return R.ok("订单无商品引用");
+
+    }
+
+    /**
+     * 后台管理查询订单数据
+     *
+     * @param pageParam
+     * @return
+     */
+    @Override
+    public R adminList(PageParam pageParam) {
+        int offset = (pageParam.getCurrentPage()-1) * pageParam.getPageSize();
+        int pageSize = pageParam.getPageSize();
+         List<AdminOrderVo> adminOrderVoList =  orderMapper.selectAdminOrder(offset,pageSize);
+         return R.ok("订单数据查询成功",adminOrderVoList);
     }
 }
