@@ -17,8 +17,14 @@ public class LoginProtectInterceptor implements HandlerInterceptor {
         if (userInfo != null) {
             return true;
         }else{
-            response.sendRedirect(request.getContextPath()+"/index.html");
-            return false;
+            return true;
         }
+//        else if{
+//            request.getHeader()
+//        }
+//        else{
+//            response.sendRedirect(request.getContextPath()+"/index.html");
+//            return false;
+//        }
     }
 }

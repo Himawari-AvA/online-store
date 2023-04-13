@@ -88,6 +88,15 @@ public class HtmlJumpController {
     }
 
     /**
+     * 跳转订单管理页面
+     */
+    @GetMapping("/custom")
+    public String custom(){
+        log.info("HtmlJumpController.custom,跳转用户管理!custom!");
+        return "custom/custom";
+    }
+
+    /**
      * 打开编辑用户页面
      */
     @GetMapping("/user/update/html")
@@ -175,4 +184,5 @@ public class HtmlJumpController {
         model.addAttribute("clist",categoryList);
         return "product/edit";
     }
+
 }

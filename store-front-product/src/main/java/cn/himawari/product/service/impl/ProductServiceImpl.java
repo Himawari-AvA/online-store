@@ -4,7 +4,6 @@ import cn.himawari.clients.*;
 import cn.himawari.param.ProductIdsParam;
 import cn.himawari.param.ProductSaveParam;
 import cn.himawari.param.ProductSearchParam;
-import cn.himawari.pojo.Category;
 import cn.himawari.pojo.Picture;
 import cn.himawari.pojo.Product;
 import cn.himawari.product.mapper.PictureMapper;
@@ -62,7 +61,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
 
         LinkedHashMap<String,Object> map = (LinkedHashMap<String, Object>) r.getData();
         Integer categoryId = (Integer) map.get("category_id");
-
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("category_id",categoryId);
         queryWrapper.orderByDesc("product_sales");
@@ -231,7 +229,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
     @Cacheable(value = "list.product", key = "#productIds")
     @Override
     public R ids(List<Integer> productIds) {
-
         QueryWrapper<Product> queryWrapper= new  QueryWrapper<>();
         queryWrapper.in("product_id",productIds);
         List<Product> productList = productMapper.selectList(queryWrapper);
@@ -340,6 +337,25 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
 
         searchClient.remove(productId);
         return R.ok("商品删除成功！");
+    }
+
+    /**
+     * 通过目录id查找销量最高的三个商品给出推荐
+     *
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public List<Product> getPreference(Integer categoryId) {
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("category_id",categoryId);
+        queryWrapper.orderByDesc("product_sales");
+
+        IPage<Product> page  = new Page<>(1,3);
+        page = productMapper.selectPage(page, queryWrapper);
+        List<Product> productList = page.getRecords();
+        log.info("ProductServiceImpl.getPreference业务结束，结果：{}",productList);
+        return productList;
     }
 
 }

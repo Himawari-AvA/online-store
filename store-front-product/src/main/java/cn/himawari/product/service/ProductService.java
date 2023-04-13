@@ -99,4 +99,11 @@ public interface ProductService extends IService<Product> {
      * @return
      */
     R adminRemove(Integer productId);
+
+    /**
+     * 通过目录id查找销量最高的三个商品给出推荐
+     * @param categoryId
+     * @return
+     */
+    List<Product> getPreference(Integer categoryId);
 }

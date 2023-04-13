@@ -1,10 +1,13 @@
 package cn.himawari.user.service.impl;
 
+import cn.himawari.clients.ProductClient;
 import cn.himawari.constants.UserConstants;
-import cn.himawari.param.PageParam;
-import cn.himawari.param.UserCheckParam;
-import cn.himawari.param.UserLoginParam;
+import cn.himawari.param.*;
+import cn.himawari.pojo.Address;
+import cn.himawari.pojo.Preference;
+import cn.himawari.pojo.Product;
 import cn.himawari.pojo.User;
+import cn.himawari.user.mapper.PreferenceMapper;
 import cn.himawari.user.mapper.UserMapper;
 import cn.himawari.user.service.UserService;
 import cn.himawari.utils.MD5Util;
@@ -16,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -24,6 +27,11 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private PreferenceMapper preferenceMapper;
+
+    @Autowired
+    private ProductClient productClient;
 
     /**
      * 检查账号是否可用
@@ -149,6 +157,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public R update(User user) {
 
+        log.info("UserServiceImpl.update业务开始，结果：{}",user);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",user.getUserId());
         queryWrapper.eq("password",user.getPassword());
@@ -191,5 +200,115 @@ public class UserServiceImpl implements UserService {
         }
         log.info("UserServiceImpl.save业务结束，结果：{}","添加成功！");
         return R.ok("添加成功！");
+    }
+
+    /**
+     * 获取一个用户的相关信息
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public R getOneInfo(Integer userId) {
+        User user = userMapper.selectById(userId);
+        return R.ok("查询成功",user);
+    }
+
+    /**
+     * 添加一个偏好
+     *
+     * @param preferenceParam
+     * @return
+     */
+    @Override
+    public R addpreference(PreferenceParam preferenceParam) {
+
+        int i = 0;
+        log.info("UserServiceImpl.addpreference业务开始，结果：{}",preferenceParam);
+        QueryWrapper<Preference> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",preferenceParam.getUserId());
+        queryWrapper.eq("category_id",preferenceParam.getCategoryId());
+        Long aLong = preferenceMapper.selectCount(queryWrapper);
+        if (aLong == 1) {
+            Preference oldPreference = preferenceMapper.selectOne(queryWrapper);
+            Integer frequencyOld = oldPreference.getFrequency();
+            oldPreference.setFrequency(frequencyOld+preferenceParam.getFrequency());
+            i = preferenceMapper.updateById(oldPreference);
+
+        }else{
+            Preference newPreference = new Preference();
+            newPreference.setUserId(preferenceParam.getUserId());
+            newPreference.setCategoryId(preferenceParam.getCategoryId());
+            newPreference.setFrequency(preferenceParam.getFrequency());
+            i = preferenceMapper.insert(newPreference);
+        }
+
+        log.info("UserServiceImpl.addpreference业务结束，结果：{}",i);
+        return R.ok("用户偏好商品添加成功！");
+    }
+
+    /**
+     * 查询用户的偏好
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public R getpreference(Integer userId) {
+        List<Product> allCategoryPre = new ArrayList<>();
+        int listLength = 3;
+        QueryWrapper<Preference> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",userId);
+        List<Preference> preferenceList = preferenceMapper.selectList(queryWrapper);
+
+        if(preferenceList.size()==0){
+            log.info("AddressServiceImpl.getpreference业务结束，结果：{}","无该用户偏好数据");
+            return R.fail("无该用户偏好数据");
+        }
+//TODO:List<>排序；
+//        log.info("偏好排序前：{}");
+//        preferenceList.forEach(preference -> {
+//            log.info(preference.toString());
+//        });
+//        log.info("------------------------");
+        Collections.sort(preferenceList, new Comparator<Preference>() {
+            @Override
+            public int compare(Preference o1, Preference o2) {
+                return o2.getFrequency()-o1.getFrequency();
+            }
+        });
+
+//        log.info("偏好排序后：{}");
+//        preferenceList.forEach(preference -> {
+//            log.info(preference.toString());
+//        });
+//        log.info("------------------------");
+        if(preferenceList.size()<3){
+            listLength = preferenceList.size();
+        }
+        List<Preference> newList = preferenceList.subList(0,listLength-1);
+        List<Product> productList = new ArrayList<>();
+        newList.forEach(preferenceOne ->{
+            CategoryParam categoryParam = new CategoryParam();
+            categoryParam.setCategoryId(preferenceOne.getCategoryId());
+//            R r = productClient.getPreference(categoryParam);
+//            if(r.getCode().equals(R.FAIL_CODE)){
+//                log.info("UserServiceImpl.getpreference业务结束，结果：{}","类别查询失败！");
+//                return r;
+//            }
+
+            List<Product> oneCategoryPre = productClient.getPreference(categoryParam);
+            allCategoryPre.addAll(oneCategoryPre);
+
+//            if(r.getCode()=="001"){
+//                for (Product product:r.getData()) {
+//                productList.add(product);
+//                }
+//            }
+        });
+
+        R ok = R.ok("查询成功",allCategoryPre);
+        log.info("AddressServiceImpl.getpreference业务结束，结果：{}",ok);
+        return ok;
     }
 }

@@ -1,8 +1,10 @@
 package cn.himawari.user.service;
 
 import cn.himawari.param.PageParam;
+import cn.himawari.param.PreferenceParam;
 import cn.himawari.param.UserCheckParam;
 import cn.himawari.param.UserLoginParam;
+import cn.himawari.pojo.Preference;
 import cn.himawari.pojo.User;
 import cn.himawari.utils.R;
 
@@ -55,4 +57,25 @@ public interface UserService {
      * @return
      */
     R save(User user);
+
+    /**
+     * 获取一个用户的相关信息
+     * @param userId
+     * @return
+     */
+    R getOneInfo(Integer userId);
+
+    /**
+     * 添加一个偏好
+     * @param preferenceParam
+     * @return
+     */
+    R addpreference(PreferenceParam preferenceParam);
+
+    /**
+     * 查询用户的偏好
+     * @param userId
+     * @return
+     */
+    R getpreference(Integer userId);
 }

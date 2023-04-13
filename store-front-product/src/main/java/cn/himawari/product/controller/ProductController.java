@@ -1,9 +1,7 @@
 package cn.himawari.product.controller;
 
-import cn.himawari.param.ProductIdParam;
-import cn.himawari.param.ProductIdsParam;
-import cn.himawari.param.ProductPromoParam;
-import cn.himawari.param.ProductSearchParam;
+import cn.himawari.param.*;
+import cn.himawari.pojo.Product;
 import cn.himawari.product.service.ProductService;
 import cn.himawari.utils.R;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("product")
@@ -77,6 +78,11 @@ public class ProductController {
     @PostMapping("search")
     public R search(@RequestBody ProductSearchParam productSearchParam){
         return productService.search(productSearchParam);
+    }
+
+    @PostMapping("getpreference")
+    public List<Product> getPreference(@RequestBody CategoryParam categoryParam){
+        return productService.getPreference(categoryParam.getCategoryId());
     }
 
 }

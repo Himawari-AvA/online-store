@@ -1,7 +1,7 @@
 package cn.himawari.user.controller;
 
-import cn.himawari.param.UserCheckParam;
-import cn.himawari.param.UserLoginParam;
+import cn.himawari.param.*;
+import cn.himawari.pojo.Preference;
 import cn.himawari.pojo.User;
 import cn.himawari.user.service.UserService;
 import cn.himawari.utils.R;
@@ -51,5 +51,38 @@ public class UserController {
             return R.fail("参数异常，不可登录");
         }
         return userservice.login(userLoginParam);
+    }
+
+
+    @PostMapping("getone")
+    public R getOneInfo(@RequestBody @Validated CartListParam cartListParam, BindingResult result){
+        if(result.hasErrors()){
+            return R.fail("用户数据有误，查不到相应数据");
+        }
+        return  userservice.getOneInfo(cartListParam.getUserId());
+    }
+
+    @PostMapping("firstaddpreference")
+    public R firstAddPreference(@RequestBody @Validated CartListParam cartListParam, BindingResult result){
+        if(result.hasErrors()){
+            return R.fail("用户数据有误，查不到相应数据");
+        }
+        return  userservice.getOneInfo(cartListParam.getUserId());
+    }
+
+    @PostMapping("addpreference")
+    public R addPreference(@RequestBody @Validated PreferenceParam preferenceParam, BindingResult result){
+        if(result.hasErrors()){
+            return R.fail("用户数据有误，查不到相应数据");
+        }
+        return  userservice.addpreference(preferenceParam);
+    }
+
+    @PostMapping("getpreference")
+    public R getPreference(@RequestBody @Validated AddressListParam addressListParam, BindingResult result){
+        if(result.hasErrors()){
+            return R.fail("用户数据有误，查不到相应数据");
+        }
+        return  userservice.getpreference(addressListParam.getUserId());
     }
 }

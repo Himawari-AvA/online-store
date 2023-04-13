@@ -1,9 +1,6 @@
 package cn.himawari.clients;
 
-import cn.himawari.param.ProductCollectParam;
-import cn.himawari.param.ProductHistoryParam;
-import cn.himawari.param.ProductIdParam;
-import cn.himawari.param.ProductSaveParam;
+import cn.himawari.param.*;
 import cn.himawari.pojo.Product;
 import cn.himawari.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -40,4 +37,8 @@ public interface ProductClient {
 
     @PostMapping("/product/admin/remove")
     R adminRemove(@RequestBody Integer productId);
+
+    @PostMapping("/product/getpreference")
+    List<Product> getPreference(@RequestBody CategoryParam categoryParam);
+
 }

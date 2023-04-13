@@ -4,8 +4,10 @@ import cn.himawari.clients.ProductClient;
 import cn.himawari.history.mapper.HistoryMapper;
 import cn.himawari.history.service.HistoryService;
 import cn.himawari.param.ProductHistoryParam;
+import cn.himawari.param.ProductIdParam;
 import cn.himawari.pojo.History;
 import cn.himawari.pojo.Order;
+import cn.himawari.pojo.Product;
 import cn.himawari.utils.R;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +41,8 @@ public class HistoryServiceImpl implements HistoryService {
     Long count = historyMapper.selectCount(queryWrapper);
         log.info("2222222222222");
     if(count>0){
-        return R.fail("已经添加，无需重复添加");
+//        return R.fail("已经添加，无需重复添加");
+        historyMapper.delete(queryWrapper);
     }
 
     history.setCollectTime(System.currentTimeMillis());
@@ -60,21 +63,42 @@ public class HistoryServiceImpl implements HistoryService {
      */
     @Override
     public R list(Integer userId) {
+        List<Product> productList = new ArrayList<>();
 
         QueryWrapper<History> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("user_id",userId);
+//        queryWrapper.select("product_id");
+////        queryWrapper.orderByDesc("collect_time");
+//        List<Object> idsObject = historyMapper.selectObjs(queryWrapper);
+//        ProductHistoryParam productHistoryParam = new ProductHistoryParam();
+
         queryWrapper.eq("user_id",userId);
-        queryWrapper.select("product_id");
-        List<Object> idsObject = historyMapper.selectObjs(queryWrapper);
+        queryWrapper.orderByDesc("collect_time");
+        List<History> historyList = historyMapper.selectList(queryWrapper);
         ProductHistoryParam productHistoryParam = new ProductHistoryParam();
 
+
         List<Integer> ids = new ArrayList<>();
-        for (Object o : idsObject) {
-            ids.add((Integer) o);
+//        for (Object o : idsObject) {
+//            ids.add((Integer) o);
+//        }
+        for (History history : historyList) {
+//            log.info("查看第一次id集合顺序:{}",history.getProductId());
+            ids.add(history.getProductId());
         }
+//        log.info("查看第二次id集合顺序:{}",ids);
         productHistoryParam.setProductIds(ids);
-        R r = productClient.productIds(productHistoryParam);
-        log.info("HistoryServiceImpl.list方法结束，结果：{}",r);
-        return r;
+//        log.info("查看第三次id集合顺序:{}",productHistoryParam.getProductIds());
+//        R r = productClient.productIds(productHistoryParam);
+//        log.info("查看第四次id集合顺序:{}",r.getData());
+
+        ids.forEach(id->{
+            ProductIdParam productIdParam = new ProductIdParam();
+            productIdParam.setProductID(id);
+            productList.add(productClient.productDetail(productIdParam));
+        });
+        log.info("HistoryServiceImpl.list方法结束，结果：{}",productList);
+        return R.ok(productList);
     }
 
     /**

@@ -1,31 +1,24 @@
 package cn.himawari.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-
 @Data
-@TableName("history")
-public class History implements Serializable {
-    public static final Long serialVersionUID = 1L;
+@TableName("preference")
+public class Preference  implements Serializable {
 
+    public static final Long serialVersionUID = 1L;
     @TableId(type = IdType.AUTO)
     private Integer id;
-
     @JsonProperty("user_id")
-    @TableField("user_id")
     private Integer userId;
+    @JsonProperty("category_id")
+    private Integer  categoryId; //订单编号,选择使用时间戳
+//    @JsonProperty("frequency")
+    private Integer frequency;
 
-    @JsonProperty("product_id")
-    @TableField("product_id")
-    private Integer productId;
-
-    @JsonProperty("collect_time")
-    @TableField("collect_time")
-    private Long collectTime;
 }
