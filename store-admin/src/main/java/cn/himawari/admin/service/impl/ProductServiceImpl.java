@@ -43,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public R save(ProductSaveParam productSaveParam) {
+        log.info("admin-service-ProductServiceImpl.save业务开始，参数：{}",productSaveParam);
         R r = productClient.adminSave(productSaveParam);
         log.info("ProductServiceImpl.save业务结束，结果：{}",r);
         return r;

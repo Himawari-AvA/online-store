@@ -12,12 +12,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Date;
 
-/**
- * projectName: b2c-cloud-store
- *
- * @author: 赵伟风
- * description:
- */
 @Component
 @Data
 @ConfigurationProperties(prefix = "aliyun.oss.file")

@@ -1,7 +1,6 @@
 package cn.himawari.user.service.impl;
 
 import cn.himawari.pojo.Address;
-import cn.himawari.pojo.User;
 import cn.himawari.user.mapper.AddressMapper;
 import cn.himawari.user.service.AddressService;
 import cn.himawari.utils.R;
@@ -70,5 +69,24 @@ public class AddressServiceImpl implements AddressService {
         }
         log.info("AddressServiceImpl.remove业务结束,结果:{}","删除地址成功");
         return R.ok("删除地址数据成功");
+    }
+
+    /**
+     * 根据id查找一个地址数据
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Address getone(Integer id) {
+        log.info("本次查询的地址id为:{}",id);
+        Address address = addressMapper.selectById(id);
+//        if(address == null){
+//            log.info("AddressServiceImpl.getone业务失败,结果:{}",address);
+//            return R.fail("获取地址数据失败");
+//        }
+        log.info("AddressServiceImpl.getone业务成功,结果:{}",address);
+//        return R.ok("获取地址数据成功",address);
+        return address;
     }
 }

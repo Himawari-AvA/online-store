@@ -37,11 +37,19 @@ public class AddressController {
     }
 
     @PostMapping("remove")
-    public R save(@RequestBody @Validated AddressRemoveParam addressRemoveParam, BindingResult result){
+    public R remove(@RequestBody @Validated AddressRemoveParam addressRemoveParam, BindingResult result){
         if(result.hasErrors()){
             return R.fail("参数异常，删除失败");
         }
         return addressService.remove(addressRemoveParam.getId());
+    }
+
+    @PostMapping("getone")
+    public Address getone(@RequestBody @Validated AddressRemoveParam addressRemoveParam, BindingResult result){
+//        if(result.hasErrors()){
+//            return R.fail("参数异常，删除失败");
+//        }
+        return addressService.getone(addressRemoveParam.getId());
     }
 
 

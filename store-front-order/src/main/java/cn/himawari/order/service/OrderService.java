@@ -10,7 +10,7 @@ public interface OrderService extends IService<Order> {
 
 
     /**
-     * 订单数据保存业务
+     * 订单数据保存，订单状态为默认0
      * @param orderParam
      * @return
      */
@@ -36,4 +36,18 @@ public interface OrderService extends IService<Order> {
      * @return
      */
     R adminList(PageParam pageParam);
+
+    /**
+     * 根据订单id取消订单，修改相关的订单状态为2
+     * @param orderId
+     * @return
+     */
+    R cancel(Long orderId);
+
+    /**
+     * 订单完成支付后，修改订单状态为1
+     * @param orderId
+     * @return
+     */
+    R pay(Long orderId);
 }

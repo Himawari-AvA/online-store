@@ -1,12 +1,14 @@
 package cn.himawari.order.service.impl;
 
 import cn.himawari.clients.ProductClient;
+import cn.himawari.clients.UserClient;
 import cn.himawari.order.mapper.OrderMapper;
 import cn.himawari.order.service.OrderService;
+import cn.himawari.param.AddressRemoveParam;
 import cn.himawari.param.OrderParam;
 import cn.himawari.param.PageParam;
 import cn.himawari.param.ProductCollectParam;
-import cn.himawari.pojo.Cart;
+import cn.himawari.pojo.Address;
 import cn.himawari.pojo.Order;
 import cn.himawari.pojo.Product;
 import cn.himawari.to.OrderToProduct;
@@ -32,7 +34,8 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
     @Autowired
     private ProductClient productClient;
-
+    @Autowired
+    private UserClient userClient;
     @Autowired
     private OrderMapper orderMapper;
 
@@ -58,6 +61,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<Order> orderList = new ArrayList<>();
 
         Integer userId = orderParam.getUserId();
+        Integer addressId = orderParam.getAddressId();
         long orderId = System.currentTimeMillis();
         for (CartVo cartVo:orderParam.getProducts()) {
             cartIds.add(cartVo.getId());//要删除的购物车中的商品的id
@@ -73,6 +77,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             order.setProductPrice(cartVo.getPrice());
             order.setProductId(cartVo.getProductID());
             order.setProductNum(cartVo.getNum());
+            order.setAddressId(addressId);
             orderList.add(order);
         }
 //       订单数据批量保存
@@ -86,7 +91,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //发送商品服务消息
 
 
-        return R.ok("订单保存成功");
+        return R.ok("订单保存成功",orderId);
     }
 
     /**
@@ -117,7 +122,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         //结果封装
         List<List<OrderVo>> result = new ArrayList<>();
         //遍历订单项集合
+        Integer addressId = 0;
+        Address address = new Address();
+            AddressRemoveParam addressRemoveParam = new AddressRemoveParam();
         for (List<Order> orders : orderMap.values()) {
+            log.info("本次addressId:{}",addressId);
+            log.info("本次orders:{}",orders);
+            log.info("本次orders.get(0):{}",orders.get(0));
+            log.info("本次orders.get(0).getAddressId():{}",orders.get(0).getAddressId());
+
+            addressId = orders.get(0).getAddressId();
+            addressRemoveParam.setId(addressId);
+            address = userClient.getone(addressRemoveParam);
+            log.info(address.toString());
+            log.info(address.getAddress());
+            log.info(address.getLinkman());
+            log.info(address.getPhone());
             List<OrderVo> orderVos = new ArrayList<>();
             //封装每一个集合
             for (Order order : orders) {
@@ -137,6 +157,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 Product product = productMap.get(order.getProductId());
                 orderVo.setProductName(product.getProductName());
                 orderVo.setProductPicture(product.getProductPicture());
+
+                orderVo.setAddress(address.getAddress());
+                orderVo.setLinkman(address.getLinkman());
+                orderVo.setPhone(address.getPhone());
+
                 orderVos.add(orderVo);
             }
             result.add(orderVos);
@@ -179,5 +204,55 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         int pageSize = pageParam.getPageSize();
          List<AdminOrderVo> adminOrderVoList =  orderMapper.selectAdminOrder(offset,pageSize);
          return R.ok("订单数据查询成功",adminOrderVoList);
+    }
+
+    /**
+     * 根据订单id取消订单，修改相关的订单状态
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public R cancel(Long orderId) {
+        final int[] i = {0};
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_id",orderId);
+        List<Order> orderList = orderMapper.selectList(queryWrapper);
+        int count = Math.toIntExact(orderMapper.selectCount(queryWrapper));
+        orderList.forEach(order -> {
+            order.setOrderState(2);
+            i[0] += orderMapper.updateById(order);
+        });
+        if(i[0] == count){
+            return R.ok("订单取消成功",count);
+        }else{
+            return R.fail("订单取消失败");
+        }
+
+    }
+
+    /**
+     * 订单完成支付后，修改订单状态为1
+     *
+     * @param orderId
+     * @return
+     */
+    @Override
+    public R pay(Long orderId) {
+        final int[] i = {0};
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_id",orderId);
+        List<Order> orderList = orderMapper.selectList(queryWrapper);
+        int count = Math.toIntExact(orderMapper.selectCount(queryWrapper));
+        orderList.forEach(order -> {
+            order.setOrderState(1);
+            i[0] += orderMapper.updateById(order);
+        });
+        if(i[0] == count){
+            return R.ok("订单支付成功",count);
+        }else{
+            return R.fail("订单支付失败");
+        }
+
     }
 }

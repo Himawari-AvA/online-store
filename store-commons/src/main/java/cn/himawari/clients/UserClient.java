@@ -1,7 +1,9 @@
 package cn.himawari.clients;
 
+import cn.himawari.param.AddressRemoveParam;
 import cn.himawari.param.CartListParam;
 import cn.himawari.param.PageParam;
+import cn.himawari.pojo.Address;
 import cn.himawari.pojo.User;
 import cn.himawari.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -28,4 +30,7 @@ public interface UserClient {
 
     @PostMapping("/user/admin/save")
     R adminSave(@RequestBody User user);
+
+    @PostMapping("/user/address/getone")
+    Address getone(@RequestBody AddressRemoveParam addressRemoveParam);
 }

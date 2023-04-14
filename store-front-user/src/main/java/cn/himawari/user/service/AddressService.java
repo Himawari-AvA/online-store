@@ -24,4 +24,11 @@ public interface AddressService {
      * @return 001 004
      */
     R remove(Integer id);
+
+    /**
+     * 根据id查找一个地址数据
+     * @param id
+     * @return
+     */
+    Address getone(Integer id);
 }

@@ -14,5 +14,8 @@ public class OrderVo extends Order {
     private String productName;
     @JsonProperty("product_picture")
     private String productPicture;
+    private String linkman;
+    private String phone;
+    private String address;
 
 }

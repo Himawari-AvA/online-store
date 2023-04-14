@@ -264,6 +264,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
     @CacheEvict(value = "list.product",allEntries = true)
     @Override
     public R adminSave(ProductSaveParam productSaveParam) {
+        log.info("ProductService-ProductServiceImpl.adminSave业务开始，参数：{}",productSaveParam);
+        log.info("ProductService-ProductServiceImpl.adminSave业务开始2，参数：{}",productSaveParam.getPictures());
+        log.info("ProductService-ProductServiceImpl.adminSave业务开始3，参数：{}",productSaveParam.getProductIntro());
+        log.info("ProductService-ProductServiceImpl.adminSave业务开始3，参数：{}",productSaveParam.getProductId());
 
         Product product = new Product();
         BeanUtils.copyProperties(productSaveParam,product);
