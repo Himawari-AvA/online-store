@@ -24,12 +24,12 @@ public class UserController{
     }
 
     @PostMapping("remove")
-    public R userList(CartListParam cartListParam){
+    public R userRemove(CartListParam cartListParam){
         return userService.userRemove(cartListParam);
     }
 
     @PostMapping("update")
-    public R userList(User user){
+    public R userUpdate(User user){
         return userService.userUpdate(user);
     }
 

@@ -14,12 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-/**
- * projectName: b2c-cloud-store
- *
- * @author: 赵伟风
- * description:  专门用于存储,页面跳转handler方法的controller
- */
+
 @Slf4j
 @Controller
 @RequestMapping

@@ -56,6 +56,17 @@ public class WebSocketServer {
     public void onClose(Session session, @PathParam("username") String username) {
         sessionMap.remove(username);
         log.info("有一连接关闭，移除username={}的用户session, 当前在线人数为：{}", username, sessionMap.size());
+        JSONObject result = new JSONObject();
+        JSONArray array = new JSONArray();
+        result.set("users", array);
+        for (Object key : sessionMap.keySet()) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.set("username", key);
+            // {"username", "zhang", "username": "admin"}
+            array.add(jsonObject);
+        }
+//        {"users": [{"username": "zhang"},{ "username": "admin"}]}
+        sendAllMessage(JSONUtil.toJsonStr(result));  // 后台发送消息给所有的客户端
     }
 
     /**

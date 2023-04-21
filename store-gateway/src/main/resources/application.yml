@@ -2,6 +2,13 @@
 spring:
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedHeaders: "*"
+            allowedOrigins: "*"
+            allowCredentials: true
+            allowedMethods: "*"
       routes:
         - id: user-service  服务名称
           uri: lb://user-service  #路径的服务名称，使用负载均衡lb

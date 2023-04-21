@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient("history-service")
 public interface HistoryClient {
-    @PostMapping("collect/remove/product")
+    @PostMapping("history/remove/product")
     R remove(@RequestBody Integer productId);
 }

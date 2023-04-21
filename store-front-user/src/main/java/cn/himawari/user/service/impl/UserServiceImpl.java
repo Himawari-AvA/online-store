@@ -266,11 +266,11 @@ public class UserServiceImpl implements UserService {
             return R.fail("无该用户偏好数据");
         }
 //TODO:List<>排序；
-//        log.info("偏好排序前：{}");
-//        preferenceList.forEach(preference -> {
-//            log.info(preference.toString());
-//        });
-//        log.info("------------------------");
+        log.info("偏好排序前：{}");
+        preferenceList.forEach(preference -> {
+            log.info(preference.toString());
+        });
+        log.info("------------------------");
         Collections.sort(preferenceList, new Comparator<Preference>() {
             @Override
             public int compare(Preference o1, Preference o2) {
@@ -278,17 +278,19 @@ public class UserServiceImpl implements UserService {
             }
         });
 
-//        log.info("偏好排序后：{}");
-//        preferenceList.forEach(preference -> {
-//            log.info(preference.toString());
-//        });
-//        log.info("------------------------");
+        log.info("偏好排序后：{}");
+        preferenceList.forEach(preference -> {
+            log.info(preference.toString());
+        });
+        log.info("------------------------");
         if(preferenceList.size()<3){
             listLength = preferenceList.size();
         }
-        List<Preference> newList = preferenceList.subList(0,listLength-1);
+        List<Preference> newList = preferenceList.subList(0,listLength);
+        log.info("新List:{}",newList.toString());
         List<Product> productList = new ArrayList<>();
         newList.forEach(preferenceOne ->{
+            log.info("本次处理的preferenceOne:{}",preferenceOne);
             CategoryParam categoryParam = new CategoryParam();
             categoryParam.setCategoryId(preferenceOne.getCategoryId());
 //            R r = productClient.getPreference(categoryParam);
@@ -308,7 +310,7 @@ public class UserServiceImpl implements UserService {
         });
 
         R ok = R.ok("查询成功",allCategoryPre);
-        log.info("AddressServiceImpl.getpreference业务结束，结果：{}",ok);
+        log.info("UserServiceImpl.getpreference业务结束成功，结果：{}",ok);
         return ok;
     }
 }
