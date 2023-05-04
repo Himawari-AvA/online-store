@@ -85,4 +85,13 @@ public class ProductController {
         return productService.getPreference(categoryParam.getCategoryId());
     }
 
+    @PostMapping("listbysort")
+    public R listBySort(@RequestBody @Validated SortProductParam sortProductParam,BindingResult result){
+        log.info("-----ProductController正常listbysort-----");
+        if(result.hasErrors()){
+            return R.fail("商品排序搜索失败！");
+        }
+        return productService.listBySort(sortProductParam);
+    }
+
 }

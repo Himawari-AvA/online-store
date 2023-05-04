@@ -3,6 +3,7 @@ package cn.himawari.product.service;
 import cn.himawari.param.ProductIdsParam;
 import cn.himawari.param.ProductSaveParam;
 import cn.himawari.param.ProductSearchParam;
+import cn.himawari.param.SortProductParam;
 import cn.himawari.pojo.Product;
 import cn.himawari.to.OrderToProduct;
 import cn.himawari.utils.R;
@@ -106,4 +107,11 @@ public interface ProductService extends IService<Product> {
      * @return
      */
     List<Product> getPreference(Integer categoryId);
+
+    /**
+     * 根据排序需求搜索商品传回
+     * @param sortProductParam
+     * @return
+     */
+    R listBySort(SortProductParam sortProductParam);
 }

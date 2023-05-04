@@ -4,6 +4,7 @@ import cn.himawari.clients.*;
 import cn.himawari.param.ProductIdsParam;
 import cn.himawari.param.ProductSaveParam;
 import cn.himawari.param.ProductSearchParam;
+import cn.himawari.param.SortProductParam;
 import cn.himawari.pojo.Picture;
 import cn.himawari.pojo.Product;
 import cn.himawari.product.mapper.PictureMapper;
@@ -90,7 +91,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
      * @param productIdsParam
      * @return
      */
-    @Cacheable(value = "list.product",key = "#productIdsParam.categoryID+'-'+#productIdsParam.currentPage+'-'+#productIdsParam.pageSize")
+    @Cacheable(value = "list.product",key = "#productIdsParam.categoryID+'-'+#productIdsParam.currentPage+'-'+#productIdsParam.pageSize+'-'+#productIdsParam.sortKind")
     @Override
     public R byCategory(ProductIdsParam productIdsParam) {
 
@@ -103,6 +104,17 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
             queryWrapper.in("category_id",categoryID);
 
         }
+
+
+
+            switch (productIdsParam.getSortKind()){
+                case 0:break;
+                case 1:queryWrapper.orderByAsc("product_selling_price");break;
+                case 2:queryWrapper.orderByDesc("product_selling_price");break;
+                case 3:queryWrapper.orderByAsc("product_sales");break;
+                case 4:queryWrapper.orderByDesc("product_sales");break;
+            }
+
 
         IPage<Product> page = new Page<>(productIdsParam.getCurrentPage(),productIdsParam.getPageSize());
 
@@ -360,6 +372,17 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper,Product> imple
         List<Product> productList = page.getRecords();
         log.info("ProductServiceImpl.getPreference业务结束，结果：{}",productList);
         return productList;
+    }
+
+    /**
+     * 根据排序需求搜索商品传回
+     *
+     * @param sortProductParam
+     * @return
+     */
+    @Override
+    public R listBySort(SortProductParam sortProductParam) {
+        return null;
     }
 
 }

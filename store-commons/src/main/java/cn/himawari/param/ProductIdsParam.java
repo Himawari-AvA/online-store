@@ -9,6 +9,7 @@ import java.util.List;
 public class ProductIdsParam extends PageParam{
     @NotNull
     private List<Integer> categoryID;
+    private int sortKind = 0;
 //    private int currentPage = 1; //默认值
 //    private int pageSize = 15;
 

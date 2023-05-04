@@ -18,6 +18,8 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -41,15 +43,32 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public R search(ProductSearchParam productSearchParam) {
         SearchRequest searchRequest = new SearchRequest("product");
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         String search = productSearchParam.getSearch();
         if(StringUtils.isEmpty(search)){
-            searchRequest.source().query(QueryBuilders.matchAllQuery());
+//            searchRequest.source().query(QueryBuilders.matchAllQuery());
+            sourceBuilder.query(QueryBuilders.matchAllQuery());
         }else{
-            searchRequest.source().query(QueryBuilders.matchQuery("all",search));
+//            searchRequest.source().query(QueryBuilders.matchQuery("all",search));
+            sourceBuilder.query(QueryBuilders.matchQuery("all",search));
         }
+            switch (productSearchParam.getSortKind()){
+                case 0:break;
+//                case 1:searchRequest.source().query(QueryBuilders.matchAllQuery()).sort("productSellingPrice", SortOrder.ASC);break;
+                case 1:sourceBuilder.sort("product_selling_price",SortOrder.ASC);break;
 
-        searchRequest.source().from((productSearchParam.getCurrentPage()-1)*productSearchParam.getPageSize());
-        searchRequest.source().size(productSearchParam.getPageSize());
+//                case 2:searchRequest.source().query(QueryBuilders.matchAllQuery()).sort("productSellingPrice", SortOrder.DESC);break;
+//                case 3:searchRequest.source().query(QueryBuilders.matchAllQuery()).sort("productSales", SortOrder.ASC);break;
+//                case 4:searchRequest.source().query(QueryBuilders.matchAllQuery()).sort("productSales", SortOrder.DESC);break;
+                case 2:sourceBuilder.sort("product_selling_price",SortOrder.DESC);break;
+                case 3:sourceBuilder.sort("product_sales",SortOrder.ASC);break;
+                case 4:sourceBuilder.sort("product_sales",SortOrder.DESC);break;
+            }
+        sourceBuilder.from((productSearchParam.getCurrentPage()-1)*productSearchParam.getPageSize());
+        sourceBuilder.size(productSearchParam.getPageSize());
+        searchRequest.source(sourceBuilder);
+//        searchRequest.source().from((productSearchParam.getCurrentPage()-1)*productSearchParam.getPageSize());
+//        searchRequest.source().size(productSearchParam.getPageSize());
 
         SearchResponse searchResponse = null;
         try {
@@ -57,7 +76,9 @@ public class SearchServiceImpl implements SearchService {
         } catch (IOException e) {
             throw new RuntimeException("查询错误");
         }
-
+        log.info("------------------------------排序结果1-----------------------");
+        log.info("结果：{}",searchResponse);
+        log.info("------------------------------排序结果2-----------------------");
         SearchHits hits = searchResponse.getHits();
         long total = hits.getTotalHits().value;
         SearchHit[] hitsHits = hits.getHits();

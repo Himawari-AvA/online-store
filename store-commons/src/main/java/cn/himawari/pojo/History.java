@@ -25,7 +25,7 @@ public class History implements Serializable {
     @TableField("product_id")
     private Integer productId;
 
-    @JsonProperty("collect_time")
-    @TableField("collect_time")
-    private Long collectTime;
+    @JsonProperty("time")
+    @TableField("time")
+    private Long time;
 }

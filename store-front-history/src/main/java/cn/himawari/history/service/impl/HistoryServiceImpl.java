@@ -33,23 +33,18 @@ public class HistoryServiceImpl implements HistoryService {
      */
     @Override
     public R save(History history) {
-        log.info("111111111111111");
     QueryWrapper<History> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("user_id",history.getUserId());
     queryWrapper.eq("product_id",history.getProductId());
 
     Long count = historyMapper.selectCount(queryWrapper);
-        log.info("2222222222222");
     if(count>0){
-//        return R.fail("已经添加，无需重复添加");
         historyMapper.delete(queryWrapper);
     }
 
-    history.setCollectTime(System.currentTimeMillis());
+    history.setTime(System.currentTimeMillis());
 
-        log.info("3333333333333333333");
     int rows = historyMapper.insert(history);
-        log.info("4444444444444444");
     log.info("HistoryServiceImpl.save业务结束，结果:{}",rows);
 
         return R.ok("添加成功");
@@ -73,7 +68,7 @@ public class HistoryServiceImpl implements HistoryService {
 //        ProductHistoryParam productHistoryParam = new ProductHistoryParam();
 
         queryWrapper.eq("user_id",userId);
-        queryWrapper.orderByDesc("collect_time");
+        queryWrapper.orderByDesc("time");
         List<History> historyList = historyMapper.selectList(queryWrapper);
         ProductHistoryParam productHistoryParam = new ProductHistoryParam();
 
