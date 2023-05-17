@@ -38,7 +38,7 @@ public class AdminUserController {
         }
 
         session.setAttribute("userInfo",user);
-        return R.ok("登陆成功");
+        return R.ok("登陆成功",user.getUserRole());
     }
 
 

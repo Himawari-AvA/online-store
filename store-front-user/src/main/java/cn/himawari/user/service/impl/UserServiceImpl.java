@@ -224,7 +224,7 @@ public class UserServiceImpl implements UserService {
     public R addpreference(PreferenceParam preferenceParam) {
 
         int i = 0;
-        log.info("UserServiceImpl.addpreference业务开始，结果：{}",preferenceParam);
+        log.info("UserServiceImpl.addPreference业务开始，结果：{}",preferenceParam);
         QueryWrapper<Preference> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",preferenceParam.getUserId());
         queryWrapper.eq("category_id",preferenceParam.getCategoryId());
@@ -243,8 +243,8 @@ public class UserServiceImpl implements UserService {
             i = preferenceMapper.insert(newPreference);
         }
 
-        log.info("UserServiceImpl.addpreference业务结束，结果：{}",i);
-        return R.ok("用户偏好商品添加成功！");
+        log.info("UserServiceImpl.addPreference业务结束，结果：{}",i);
+        return R.ok("用户偏好添加成功！");
     }
 
     /**
@@ -260,17 +260,11 @@ public class UserServiceImpl implements UserService {
         QueryWrapper<Preference> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",userId);
         List<Preference> preferenceList = preferenceMapper.selectList(queryWrapper);
-
         if(preferenceList.size()==0){
-            log.info("AddressServiceImpl.getpreference业务结束，结果：{}","无该用户偏好数据");
+            log.info("UserServiceImpl.getPreference业务结束，结果：{}","无该用户偏好数据");
             return R.fail("无该用户偏好数据");
         }
-//TODO:List<>排序；
-        log.info("偏好排序前：{}");
-        preferenceList.forEach(preference -> {
-            log.info(preference.toString());
-        });
-        log.info("------------------------");
+
         Collections.sort(preferenceList, new Comparator<Preference>() {
             @Override
             public int compare(Preference o1, Preference o2) {
@@ -278,11 +272,6 @@ public class UserServiceImpl implements UserService {
             }
         });
 
-        log.info("偏好排序后：{}");
-        preferenceList.forEach(preference -> {
-            log.info(preference.toString());
-        });
-        log.info("------------------------");
         if(preferenceList.size()<3){
             listLength = preferenceList.size();
         }
@@ -290,27 +279,14 @@ public class UserServiceImpl implements UserService {
         log.info("新List:{}",newList.toString());
         List<Product> productList = new ArrayList<>();
         newList.forEach(preferenceOne ->{
-            log.info("本次处理的preferenceOne:{}",preferenceOne);
             CategoryParam categoryParam = new CategoryParam();
             categoryParam.setCategoryId(preferenceOne.getCategoryId());
-//            R r = productClient.getPreference(categoryParam);
-//            if(r.getCode().equals(R.FAIL_CODE)){
-//                log.info("UserServiceImpl.getpreference业务结束，结果：{}","类别查询失败！");
-//                return r;
-//            }
-
             List<Product> oneCategoryPre = productClient.getPreference(categoryParam);
             allCategoryPre.addAll(oneCategoryPre);
-
-//            if(r.getCode()=="001"){
-//                for (Product product:r.getData()) {
-//                productList.add(product);
-//                }
-//            }
         });
 
         R ok = R.ok("查询成功",allCategoryPre);
-        log.info("UserServiceImpl.getpreference业务结束成功，结果：{}",ok);
+        log.info("UserServiceImpl.getPreference业务结束成功，结果：{}",ok);
         return ok;
     }
 }
